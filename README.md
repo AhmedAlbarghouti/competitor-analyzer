@@ -44,3 +44,16 @@
   - All analysis records and user data are stored in **Supabase**.
 - **Authentication:**
   - User authentication is handled via **Supabase Auth**.
+
+### API Key Setup
+
+To use the competitor analysis endpoint, you'll need to set up the following API keys in your `.env.local` file:
+
+```
+TAVILY_API_KEY=your_tavily_api_key
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+You can obtain these API keys from:
+- Tavily API: [https://tavily.com/](https://tavily.com/)
+- Gemini API: [https://ai.google.dev/](https://ai.google.dev/)
