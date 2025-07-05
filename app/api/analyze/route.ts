@@ -211,7 +211,7 @@ export async function POST(request: NextRequest) {
       
       UNIQUE FINDINGS: Other interesting or unique findings about the company that don't fit into the above categories.
             
-      IMPORTANT: Format each section EXACTLY with the heading name followed by a colon, then the content. Each section must start with the exact heading name as specified above. Separate each section with two newlines. Do not add any additional headings or sections.
+      IMPORTANT: Format each section EXACTLY with the heading name followed by a colon, then the content. Each section must start with the exact heading name as specified above. Separate each section with two newlines. Do not add any additional headings or sections. No bullet points or other formatting.
       `;
       
       const result = await model.generateContent(prompt);
