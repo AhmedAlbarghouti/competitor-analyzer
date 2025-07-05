@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Project Overview
 
-## Getting Started
+**Product Radar** is a web platform that empowers users to analyze competitor websites and gain actionable insights. The application streamlines the process of competitive intelligence by combining advanced web crawling with real-time brand and sentiment analysis.
 
-First, run the development server:
+### Key Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **User Authentication:** Secure login and signup to manage your analyses and results.
+- **Competitor Analysis Workflow:**  
+  Users can initiate an analysis for up to three competitor websites. Each analysis is split into two comprehensive phases:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+  1. **Website Crawling & Content Analysis**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+     - The platform creates an analysis record in the database for tracking.
+     - Using Tavily, it crawls the target site, focusing on all pages—especially news, latest products, compliance documents, and terms of service.
+     - The system analyzes the content to determine:
+       - What the company does
+       - Its current direction and focus
+       - Compliance posture and any notable legal or regulatory details
+       - Other interesting or unique findings
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+  2. **Brand & Sentiment Analysis**
+     - The platform gathers recent posts and discussions about the competitor from X (Twitter) and Reddit, using Bright Data.
+     - It performs brand and sentiment analysis to gauge public perception and surface trending opinions.
 
-## Learn More
+- **Results Dashboard:**  
+  Once both phases are complete, the analysis record is updated from "pending" to "ready for review." Users can view detailed, compelling reports through an intuitive UI and revisit past analyses for ongoing comparisons.
 
-To learn more about Next.js, take a look at the following resources:
+- **Analysis Limits:**  
+  Each user can analyze up to three competitor websites, ensuring focused, high-value insights.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Product Radar** provides a powerful, unified interface for discovering what your competitors are doing, how they’re perceived, and what you can learn from their strategies—all in one place.
