@@ -24,6 +24,12 @@ import {
 	BarChart,
 	Shield,
 	Search,
+	ExternalLink,
+	Clock,
+	Zap,
+	Target,
+	Award,
+	Eye,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -166,211 +172,292 @@ export default function AnalysisPage() {
 		);
 	}
 
-	console.log(analysis);
-
 	return (
-		<div className='min-h-screen bg-background p-6'>
-			<div className='max-w-4xl mx-auto'>
-				<Link href='/dashboard'>
-					<Button variant='ghost' className='mb-6'>
-						<ArrowLeft className='h-4 w-4 mr-2' />
-						Back to Dashboard
-					</Button>
-				</Link>
+		<div className='min-h-screen bg-gradient-to-br from-background via-background to-muted/20'>
+			{/* Background Effect */}
+			<div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+				<div className="absolute top-20 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+				<div className="absolute bottom-40 right-1/4 w-80 h-80 bg-secondary/5 rounded-full blur-3xl"></div>
+			</div>
 
-				{analysis && (
-					<>
-						<div className='mb-6'>
-							<h1 className='text-2xl font-semibold mb-2'>Analysis Details</h1>
-							<div className='flex items-center gap-2'>
-								<Globe className='h-4 w-4 text-muted-foreground' />
-								<a
-									href={
-										analysis.url.startsWith("http")
-											? analysis.url
-											: `https://${analysis.url}`
-									}
-									target='_blank'
-									rel='noopener noreferrer'
-									className='text-blue-600 hover:underline'
-								>
-									{analysis.url}
-								</a>
-								<span
-									className={`ml-2 px-2 py-1 rounded-full gap-2 text-xs font-medium flex items-center ${getStatusColor(
-										analysis.status
-									)}`}
-								>
-									<span className='ml-1'>{analysis.status}</span>
-									{getStatusIcon(analysis.status)}
-								</span>
-							</div>
-							<div className='flex items-center text-sm text-muted-foreground mt-1'>
-								<Calendar className='h-3 w-3 mr-1' />
-								<span>Created on {formatDate(analysis.created_at)}</span>
-							</div>
-						</div>
+			<div className='relative z-10 p-4 sm:p-6 lg:p-8'>
+				<div className='max-w-7xl mx-auto'>
+					{/* Header */}
+					<div className='flex flex-col sm:flex-row sm:items-center justify-between mb-8'>
+						<Link href='/dashboard'>
+							<Button variant='ghost' className='mb-4 sm:mb-0 hover:bg-primary/5 transition-colors'>
+								<ArrowLeft className='h-4 w-4 mr-2' />
+								Back to Dashboard
+							</Button>
+						</Link>
+					</div>
 
-						{/* Conditional content based on status */}
-						{analysis.status === "pending" && (
-							<Card>
-								<CardHeader>
-									<CardTitle className='text-lg'>
-										Analysis in Progress
-									</CardTitle>
-									<CardDescription>
-										Your competitor analysis is being processed
-									</CardDescription>
-								</CardHeader>
-								<CardContent className='flex flex-col items-center py-8'>
-									<div className='animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4'></div>
-									<p className='text-center text-muted-foreground'>
-										This may take a few minutes. The page will automatically
-										update when completed.
-									</p>
-									<Button
-										onClick={() => fetchAnalysis()}
-										variant='outline'
-										className='mt-4'
-									>
-										Refresh Status
-									</Button>
-								</CardContent>
-							</Card>
-						)}
-
-						{analysis.status === "failed" && (
-							<Card className='border-red-200'>
-								<CardHeader>
-									<CardTitle className='text-lg text-red-600'>
-										Analysis Failed
-									</CardTitle>
-									<CardDescription>
-										We couldn't complete the analysis for this URL
-									</CardDescription>
-								</CardHeader>
-								<CardContent>
-									<p className='mb-4'>
-										There was an issue processing your analysis request. This
-										might be due to:
-									</p>
-									<ul className='list-disc pl-5 space-y-1 mb-6'>
-										<li>The URL is invalid or inaccessible</li>
-										<li>The website blocked our analysis tools</li>
-										<li>A temporary system error occurred</li>
-									</ul>
-									<Button onClick={() => fetchAnalysis()}>
-										Retry Analysis
-									</Button>
-								</CardContent>
-							</Card>
-						)}
-
-						{analysis.status === "completed" && (
-							<div className="space-y-6">
-								{/* Summary Card */}
-								{analysis.summary && (
-									<Card>
-										<CardHeader>
-											<CardTitle className='text-lg'>Summary</CardTitle>
-										</CardHeader>
-										<CardContent>
-											<p className='text-sm leading-relaxed'>{analysis.summary}</p>
-										</CardContent>
-									</Card>
-								)}
-
-								{/* Key Products & Direction */}
-								<div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-									{/* Flagship Products */}
-									{analysis.flagship_product && (
-										<Card>
-											<CardHeader>
-												<CardTitle className='text-lg'>Flagship Products</CardTitle>
-											</CardHeader>
-											<CardContent>
-												<p className='text-sm leading-relaxed'>{analysis.flagship_product}</p>
-											</CardContent>
-										</Card>
-									)}
-
-									{/* Direction */}
-									{analysis.direction && (
-										<Card>
-											<CardHeader>
-												<CardTitle className='text-lg'>Direction</CardTitle>
-											</CardHeader>
-											<CardContent>
-												<p className='text-sm leading-relaxed'>{analysis.direction}</p>
-											</CardContent>
-										</Card>
-									)}
-								</div>
-
-								{/* New Launches & Sentiment */}
-								<div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-									{/* New Launches */}
-									{analysis.new_launches && (
-										<Card>
-											<CardHeader>
-												<CardTitle className='text-lg'>New Launches</CardTitle>
-											</CardHeader>
-											<CardContent>
-												<p className='text-sm leading-relaxed'>{analysis.new_launches}</p>
-											</CardContent>
-										</Card>
-									)}
-
-									{/* Sentiment Summary */}
-									{analysis.sentiment_summary && (
-										<Card>
-											<CardHeader>
-												<CardTitle className='text-lg'>Sentiment Summary</CardTitle>
-											</CardHeader>
-											<CardContent>
-												<p className='text-sm leading-relaxed'>{analysis.sentiment_summary}</p>
-											</CardContent>
-										</Card>
-									)}
-								</div>
-
-								{/* Compliance */}
-								{analysis.compliance && (
-									<Card>
-										<CardHeader>
-											<CardTitle className='text-lg'>Compliance</CardTitle>
-										</CardHeader>
-										<CardContent>
-											<p className='text-sm leading-relaxed'>{analysis.compliance}</p>
-										</CardContent>
-									</Card>
-								)}
-
-								{/* Unique Findings */}
-								{analysis.unique_findings && (
-									<Card>
-										<CardHeader>
-											<CardTitle className='text-lg'>Unique Findings</CardTitle>
-										</CardHeader>
-										<CardContent>
-											<div className='text-sm leading-relaxed' 
-												dangerouslySetInnerHTML={{ __html: analysis.unique_findings }}
-											/>
-										</CardContent>
-									</Card>
-								)}
-
-								{/* Completed Date */}
-								{analysis.completed_at && (
-									<div className='flex items-center text-sm text-muted-foreground'>
-										<Calendar className='h-3 w-3 mr-1' />
-										<span>Completed on {formatDate(analysis.completed_at)}</span>
+					{analysis && (
+						<>
+							{/* Hero Section */}
+							<div className='mb-12'>
+								<div className='text-center max-w-4xl mx-auto'>
+									<div className='inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium text-primary mb-6'>
+										<Search className="w-4 h-4" />
+										Competitor Analysis Report
 									</div>
-								)}
+									
+									<h1 className='text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent'>
+										Analysis Results
+									</h1>
+									
+									<div className='flex flex-col sm:flex-row items-center justify-center gap-4 mb-6'>
+										<div className='flex items-center gap-2 px-4 py-2 bg-card rounded-full border shadow-sm'>
+											<Globe className='h-4 w-4 text-muted-foreground' />
+											<a
+												href={
+													analysis.url.startsWith("http")
+														? analysis.url
+														: `https://${analysis.url}`
+												}
+												target='_blank'
+												rel='noopener noreferrer'
+												className='text-blue-600 hover:underline font-medium flex items-center gap-1'
+											>
+												{analysis.url}
+												<ExternalLink className="w-3 h-3" />
+											</a>
+										</div>
+										
+										<div className={`px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 ${getStatusColor(analysis.status)}`}>
+											{getStatusIcon(analysis.status)}
+											{analysis.status.charAt(0).toUpperCase() + analysis.status.slice(1)}
+										</div>
+									</div>
+									
+									<div className='flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-muted-foreground'>
+										<div className='flex items-center gap-1'>
+											<Calendar className='h-3 w-3' />
+											Created {formatDate(analysis.created_at)}
+										</div>
+										{analysis.completed_at && (
+											<div className='flex items-center gap-1'>
+												<Clock className='h-3 w-3' />
+												Completed {formatDate(analysis.completed_at)}
+											</div>
+										)}
+									</div>
+								</div>
 							</div>
-						)}
-					</>
-				)}
+
+							{/* Conditional content based on status */}
+							{analysis.status === "pending" && (
+								<div className='max-w-2xl mx-auto'>
+									<Card className="border-2 border-dashed border-yellow-200 bg-yellow-50/50">
+										<CardContent className='flex flex-col items-center py-12 text-center'>
+											<div className='w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-6'>
+												<Loader2 className='h-8 w-8 text-yellow-600 animate-spin' />
+											</div>
+											<h3 className='text-xl font-semibold mb-2'>Analysis in Progress</h3>
+											<p className='text-muted-foreground mb-6 max-w-md'>
+												Our AI is analyzing the competitor website. This typically takes 2-5 minutes depending on the site complexity.
+											</p>
+											<Button
+												onClick={() => fetchAnalysis()}
+												variant='outline'
+												className='hover:bg-yellow-50'
+											>
+												<Clock className="w-4 h-4 mr-2" />
+												Check Status
+											</Button>
+										</CardContent>
+									</Card>
+								</div>
+							)}
+
+							{analysis.status === "failed" && (
+								<div className='max-w-2xl mx-auto'>
+									<Card className='border-2 border-red-200 bg-red-50/50'>
+										<CardContent className='text-center py-12'>
+											<div className='w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6'>
+												<AlertCircle className='h-8 w-8 text-red-600' />
+											</div>
+											<h3 className='text-xl font-semibold text-red-900 mb-2'>Analysis Failed</h3>
+											<p className='text-red-700 mb-6'>
+												We encountered an issue analyzing this website. This could be due to access restrictions or technical issues.
+											</p>
+											<Button onClick={() => fetchAnalysis()} className="bg-red-600 hover:bg-red-700">
+												<Zap className="w-4 h-4 mr-2" />
+												Retry Analysis
+											</Button>
+										</CardContent>
+									</Card>
+								</div>
+							)}
+
+							{analysis.status === "completed" && (
+								<div className="space-y-8">
+									{/* Summary Hero Card */}
+									{analysis.summary && (
+										<Card className="border-2 hover:border-primary/30 transition-colors overflow-hidden">
+											<div className="bg-gradient-to-r from-primary/5 to-secondary/5 p-6">
+												<CardHeader className="p-0">
+													<div className="flex items-center gap-3 mb-3">
+														<div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+															<Eye className="w-5 h-5 text-primary" />
+														</div>
+														<div>
+															<CardTitle className='text-2xl'>Executive Summary</CardTitle>
+															<CardDescription className="text-base">
+																Key insights about this competitor
+															</CardDescription>
+														</div>
+													</div>
+												</CardHeader>
+											</div>
+											<CardContent className="p-6">
+												<p className='text-base leading-relaxed text-foreground/90'>{analysis.summary}</p>
+											</CardContent>
+										</Card>
+									)}
+
+									{/* Key Insights Grid */}
+									<div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+										{/* Flagship Products */}
+										{analysis.flagship_product && (
+											<Card className="group border-2 hover:border-primary/30 transition-all duration-200">
+												<CardHeader>
+													<div className="flex items-center gap-3">
+														<div className="w-10 h-10 bg-gradient-to-br from-blue-500/10 to-blue-600/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+															<Package className="w-5 h-5 text-blue-600" />
+														</div>
+														<div>
+															<CardTitle className='text-xl'>Flagship Products</CardTitle>
+															<CardDescription>Main offerings and services</CardDescription>
+														</div>
+													</div>
+												</CardHeader>
+												<CardContent>
+													<p className='text-base leading-relaxed'>{analysis.flagship_product}</p>
+												</CardContent>
+											</Card>
+										)}
+
+										{/* Strategic Direction */}
+										{analysis.direction && (
+											<Card className="group border-2 hover:border-primary/30 transition-all duration-200">
+												<CardHeader>
+													<div className="flex items-center gap-3">
+														<div className="w-10 h-10 bg-gradient-to-br from-purple-500/10 to-purple-600/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+															<Compass className="w-5 h-5 text-purple-600" />
+														</div>
+														<div>
+															<CardTitle className='text-xl'>Strategic Direction</CardTitle>
+															<CardDescription>Company focus and positioning</CardDescription>
+														</div>
+													</div>
+												</CardHeader>
+												<CardContent>
+													<p className='text-base leading-relaxed'>{analysis.direction}</p>
+												</CardContent>
+											</Card>
+										)}
+									</div>
+
+									{/* Innovation & Market Grid */}
+									<div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+										{/* New Launches */}
+										{analysis.new_launches && (
+											<Card className="group border-2 hover:border-primary/30 transition-all duration-200">
+												<CardHeader>
+													<div className="flex items-center gap-3">
+														<div className="w-10 h-10 bg-gradient-to-br from-green-500/10 to-green-600/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+															<Rocket className="w-5 h-5 text-green-600" />
+														</div>
+														<div>
+															<CardTitle className='text-xl'>Recent Launches</CardTitle>
+															<CardDescription>New products and initiatives</CardDescription>
+														</div>
+													</div>
+												</CardHeader>
+												<CardContent>
+													<p className='text-base leading-relaxed'>{analysis.new_launches}</p>
+												</CardContent>
+											</Card>
+										)}
+
+										{/* Market Sentiment */}
+										{analysis.sentiment_summary && (
+											<Card className="group border-2 hover:border-primary/30 transition-all duration-200">
+												<CardHeader>
+													<div className="flex items-center gap-3">
+														<div className="w-10 h-10 bg-gradient-to-br from-orange-500/10 to-orange-600/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+															<TrendingUp className="w-5 h-5 text-orange-600" />
+														</div>
+														<div>
+															<CardTitle className='text-xl'>Market Sentiment</CardTitle>
+															<CardDescription>Brand perception and tone</CardDescription>
+														</div>
+													</div>
+												</CardHeader>
+												<CardContent>
+													<p className='text-base leading-relaxed'>{analysis.sentiment_summary}</p>
+												</CardContent>
+											</Card>
+										)}
+									</div>
+
+									{/* Additional Insights */}
+									<div className="space-y-6">
+										{/* Compliance */}
+										{analysis.compliance && (
+											<Card className="border-2 hover:border-primary/30 transition-colors">
+												<CardHeader>
+													<div className="flex items-center gap-3">
+														<div className="w-10 h-10 bg-gradient-to-br from-red-500/10 to-red-600/20 rounded-xl flex items-center justify-center">
+															<Shield className="w-5 h-5 text-red-600" />
+														</div>
+														<div>
+															<CardTitle className='text-xl'>Regulatory & Compliance</CardTitle>
+															<CardDescription>Legal positioning and compliance posture</CardDescription>
+														</div>
+													</div>
+												</CardHeader>
+												<CardContent>
+													<p className='text-base leading-relaxed'>{analysis.compliance}</p>
+												</CardContent>
+											</Card>
+										)}
+
+										{/* Unique Findings */}
+										{analysis.unique_findings && (
+											<Card className="border-2 hover:border-primary/30 transition-colors">
+												<CardHeader>
+													<div className="flex items-center gap-3">
+														<div className="w-10 h-10 bg-gradient-to-br from-indigo-500/10 to-indigo-600/20 rounded-xl flex items-center justify-center">
+															<Award className="w-5 h-5 text-indigo-600" />
+														</div>
+														<div>
+															<CardTitle className='text-xl'>Unique Insights</CardTitle>
+															<CardDescription>Special findings and competitive advantages</CardDescription>
+														</div>
+													</div>
+												</CardHeader>
+												<CardContent>
+													<div className='text-base leading-relaxed prose prose-sm max-w-none' 
+														dangerouslySetInnerHTML={{ __html: analysis.unique_findings }}
+													/>
+												</CardContent>
+											</Card>
+										)}
+									</div>
+
+									{/* Footer */}
+									<div className='text-center pt-8 border-t border-border'>
+										<p className='text-sm text-muted-foreground'>
+											Analysis powered by AI • Generated on {formatDate(analysis.completed_at || analysis.created_at)}
+										</p>
+									</div>
+								</div>
+							)}
+						</>
+					)}
+				</div>
 			</div>
 		</div>
 	);
