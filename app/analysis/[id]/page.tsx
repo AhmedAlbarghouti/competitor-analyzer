@@ -17,6 +17,13 @@ import {
 	Check,
 	Globe,
 	Loader2,
+	TrendingUp,
+	Package,
+	Compass,
+	Rocket,
+	BarChart,
+	Shield,
+	Search,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -27,7 +34,15 @@ interface Analysis {
 	url: string;
 	status: string;
 	created_at: string;
-	results: any; // We'll use any for now, but you might want to define a proper type
+	completed_at?: string;
+	summary?: string;
+	flagship_product?: string;
+	direction?: string;
+	new_launches?: string;
+	sentiment_summary?: string;
+	compliance?: string;
+	unique_findings?: string;
+	user_id?: string;
 }
 
 export default function AnalysisPage() {
@@ -151,6 +166,8 @@ export default function AnalysisPage() {
 		);
 	}
 
+	console.log(analysis);
+
 	return (
 		<div className='min-h-screen bg-background p-6'>
 			<div className='max-w-4xl mx-auto'>
@@ -250,95 +267,107 @@ export default function AnalysisPage() {
 						)}
 
 						{analysis.status === "completed" && (
-							<>
-								<Card className='mb-6'>
-									<CardHeader>
-										<CardTitle className='text-lg'>Analysis Summary</CardTitle>
-										<CardDescription>
-											Overview of competitor website analysis
-										</CardDescription>
-									</CardHeader>
-									<CardContent>
-										{analysis.results ? (
-											<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-												{/* This is a placeholder for actual analysis results */}
-												<div className='p-4 border rounded-lg'>
-													<h3 className='font-medium mb-2'>SEO Score</h3>
-													<div className='text-2xl font-bold'>
-														{analysis.results.seo_score || "N/A"}
-													</div>
-												</div>
-												<div className='p-4 border rounded-lg'>
-													<h3 className='font-medium mb-2'>Performance</h3>
-													<div className='text-2xl font-bold'>
-														{analysis.results.performance_score || "N/A"}
-													</div>
-												</div>
-												<div className='p-4 border rounded-lg'>
-													<h3 className='font-medium mb-2'>Keywords</h3>
-													<div className='text-sm'>
-														{analysis.results.top_keywords
-															? analysis.results.top_keywords.join(", ")
-															: "No keywords found"}
-													</div>
-												</div>
-												<div className='p-4 border rounded-lg'>
-													<h3 className='font-medium mb-2'>Technologies</h3>
-													<div className='text-sm'>
-														{analysis.results.technologies
-															? analysis.results.technologies.join(", ")
-															: "No technologies detected"}
-													</div>
-												</div>
-											</div>
-										) : (
-											<p className='text-muted-foreground text-center py-4'>
-												No detailed results available
-											</p>
-										)}
-									</CardContent>
-								</Card>
+							<div className="space-y-6">
+								{/* Summary Card */}
+								{analysis.summary && (
+									<Card>
+										<CardHeader>
+											<CardTitle className='text-lg'>Summary</CardTitle>
+										</CardHeader>
+										<CardContent>
+											<p className='text-sm leading-relaxed'>{analysis.summary}</p>
+										</CardContent>
+									</Card>
+								)}
 
-								{/* Additional detailed sections could go here */}
-								<Card>
-									<CardHeader>
-										<CardTitle className='text-lg'>Detailed Analysis</CardTitle>
-										<CardDescription>
-											Comprehensive breakdown of competitor data
-										</CardDescription>
-									</CardHeader>
-									<CardContent>
-										{analysis.results ? (
-											<div className='space-y-6'>
-												{/* This section would be expanded with actual data */}
-												<div>
-													<h3 className='font-medium mb-2'>Content Analysis</h3>
-													<p className='text-sm text-muted-foreground'>
-														This would contain detailed content analysis from
-														the competitor site.
-													</p>
-												</div>
-												<div>
-													<h3 className='font-medium mb-2'>Technical SEO</h3>
-													<p className='text-sm text-muted-foreground'>
-														This would contain technical SEO analysis details.
-													</p>
-												</div>
-												<div>
-													<h3 className='font-medium mb-2'>User Experience</h3>
-													<p className='text-sm text-muted-foreground'>
-														This would contain UX analysis details.
-													</p>
-												</div>
-											</div>
-										) : (
-											<p className='text-muted-foreground text-center py-4'>
-												Detailed analysis data is not available for this report.
-											</p>
-										)}
-									</CardContent>
-								</Card>
-							</>
+								{/* Key Products & Direction */}
+								<div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+									{/* Flagship Products */}
+									{analysis.flagship_product && (
+										<Card>
+											<CardHeader>
+												<CardTitle className='text-lg'>Flagship Products</CardTitle>
+											</CardHeader>
+											<CardContent>
+												<p className='text-sm leading-relaxed'>{analysis.flagship_product}</p>
+											</CardContent>
+										</Card>
+									)}
+
+									{/* Direction */}
+									{analysis.direction && (
+										<Card>
+											<CardHeader>
+												<CardTitle className='text-lg'>Direction</CardTitle>
+											</CardHeader>
+											<CardContent>
+												<p className='text-sm leading-relaxed'>{analysis.direction}</p>
+											</CardContent>
+										</Card>
+									)}
+								</div>
+
+								{/* New Launches & Sentiment */}
+								<div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+									{/* New Launches */}
+									{analysis.new_launches && (
+										<Card>
+											<CardHeader>
+												<CardTitle className='text-lg'>New Launches</CardTitle>
+											</CardHeader>
+											<CardContent>
+												<p className='text-sm leading-relaxed'>{analysis.new_launches}</p>
+											</CardContent>
+										</Card>
+									)}
+
+									{/* Sentiment Summary */}
+									{analysis.sentiment_summary && (
+										<Card>
+											<CardHeader>
+												<CardTitle className='text-lg'>Sentiment Summary</CardTitle>
+											</CardHeader>
+											<CardContent>
+												<p className='text-sm leading-relaxed'>{analysis.sentiment_summary}</p>
+											</CardContent>
+										</Card>
+									)}
+								</div>
+
+								{/* Compliance */}
+								{analysis.compliance && (
+									<Card>
+										<CardHeader>
+											<CardTitle className='text-lg'>Compliance</CardTitle>
+										</CardHeader>
+										<CardContent>
+											<p className='text-sm leading-relaxed'>{analysis.compliance}</p>
+										</CardContent>
+									</Card>
+								)}
+
+								{/* Unique Findings */}
+								{analysis.unique_findings && (
+									<Card>
+										<CardHeader>
+											<CardTitle className='text-lg'>Unique Findings</CardTitle>
+										</CardHeader>
+										<CardContent>
+											<div className='text-sm leading-relaxed' 
+												dangerouslySetInnerHTML={{ __html: analysis.unique_findings }}
+											/>
+										</CardContent>
+									</Card>
+								)}
+
+								{/* Completed Date */}
+								{analysis.completed_at && (
+									<div className='flex items-center text-sm text-muted-foreground'>
+										<Calendar className='h-3 w-3 mr-1' />
+										<span>Completed on {formatDate(analysis.completed_at)}</span>
+									</div>
+								)}
+							</div>
 						)}
 					</>
 				)}
