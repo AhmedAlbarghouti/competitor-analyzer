@@ -144,7 +144,24 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.error('Tavily API error:', error);
       
-      // Update analysis record with error status
+      // Check if it's a 422 error (website unsupported by Tavily)
+      if (error instanceof Error && error.message.includes('422')) {
+        // Mark as unsupported rather than failed
+        await adminClient
+          .from("analysis")
+          .update({
+            status: "unsupported",
+            summary: `Website unsupported: This website cannot be analyzed by our crawler. It may have anti-bot measures or other technical limitations.`
+          })
+          .eq("id", analysisData.id);
+
+        return NextResponse.json(
+          { error: `Website unsupported: This website cannot be analyzed by our crawler.`, analysisId: analysisData.id },
+          { status: 422 }
+        );
+      }
+      
+      // For other errors, update analysis record with failed status
       await adminClient
         .from("analysis")
         .update({
@@ -210,7 +227,9 @@ export async function POST(request: NextRequest) {
       FLAGSHIP PRODUCTS: The main products or services that appear to be the company's flagship offerings.
       
       UNIQUE FINDINGS: Other interesting or unique findings about the company that don't fit into the above categories.
-            
+           
+	  SENTIMENT: A brief assessment of the overall sentiment and tone of the company's communications.
+
       IMPORTANT: Format each section EXACTLY with the heading name followed by a colon, then the content. Each section must start with the exact heading name as specified above. Separate each section with two newlines. Do not add any additional headings or sections. No bullet points or other formatting.
       `;
       
@@ -270,7 +289,8 @@ export async function POST(request: NextRequest) {
     const newLaunches = extractSection(geminiResponse, 'NEW LAUNCHES');
     const flagshipProduct = extractSection(geminiResponse, 'FLAGSHIP PRODUCTS');
     const uniqueFindings = extractSection(geminiResponse, 'UNIQUE FINDINGS');
-    
+    const sentimentSummary = extractSection(geminiResponse, 'SENTIMENT');
+
     console.log('Extracted structured data from Gemini response');
     console.log('SUMMARY:', summary || 'Not found');
     console.log('COMPANY DIRECTION:', direction || 'Not found');
@@ -278,6 +298,7 @@ export async function POST(request: NextRequest) {
     console.log('NEW LAUNCHES:', newLaunches || 'Not found');
     console.log('FLAGSHIP PRODUCTS:', flagshipProduct || 'Not found');
     console.log('UNIQUE FINDINGS:', uniqueFindings || 'Not found');
+	console.log('SENTIMENT:', sentimentSummary || 'Not found');
     
     // Create analysis result object
     const analysisResult: CompetitorAnalysisResult = {
@@ -298,6 +319,7 @@ export async function POST(request: NextRequest) {
         new_launches: newLaunches,
         flagship_product: flagshipProduct,
         unique_findings: uniqueFindings,
+		sentiment_summary: sentimentSummary,
         completed_at: new Date().toISOString()
       })
       .eq("id", analysisData.id);
