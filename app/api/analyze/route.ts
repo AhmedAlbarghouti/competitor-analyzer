@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
           .from("analysis")
           .update({
             status: "failed",
-            result: JSON.stringify({ error: `Domain returned non-success status code: ${domainCheck.status}` })
+            summary: `Error: Domain returned non-success status code: ${domainCheck.status}`
           })
           .eq("id", analysisData.id);
 
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
         .from("analysis")
         .update({
           status: "failed",
-          result: JSON.stringify({ error: `Failed to access domain: ${error instanceof Error ? error.message : String(error)}` })
+          summary: `Error: Failed to access domain: ${error instanceof Error ? error.message : String(error)}`
         })
         .eq("id", analysisData.id);
 
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
       console.log('Calling Tavily API to crawl domain:', domain);
       const tvly = tavily({ apiKey: TAVILY_API_KEY });
       tavilyResponse = await tvly.crawl(domain, { 
-        instructions: "news, latest products, compliance documents, and terms of service" 
+        instructions: "Focus on company overview, mission statement, product offerings, recent news, new product launches, flagship products, regulatory compliance, terms of service, privacy policy, and company direction. Look for information about strategic initiatives, market positioning, and unique selling points." 
       });
       console.log('Tavily API response received');
     } catch (error) {
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
         .from("analysis")
         .update({
           status: "failed",
-          result: JSON.stringify({ error: `Tavily API error: ${error instanceof Error ? error.message : String(error)}` })
+          summary: `Error: Tavily API error: ${error instanceof Error ? error.message : String(error)}`
         })
         .eq("id", analysisData.id);
 
@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
         .from("analysis")
         .update({
           status: "failed",
-          result: JSON.stringify({ error: 'No data returned from Tavily API' })
+          summary: 'Error: No data returned from Tavily API'
         })
         .eq("id", analysisData.id);
 
@@ -178,24 +178,46 @@ export async function POST(request: NextRequest) {
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
       
       console.log('Calling Gemini API for analysis');
+      
+      // Limit Tavily results to maximum 5 items to reduce token usage
+      let limitedResponse = { ...tavilyResponse } as any;
+      
+      // Check if results array exists and limit it to 5 items
+      if (limitedResponse && Array.isArray(limitedResponse.results)) {
+        const originalCount = limitedResponse.results.length;
+        limitedResponse.results = limitedResponse.results.slice(0, 10);
+        console.log(`Limited Tavily results from ${originalCount} to ${limitedResponse.results.length} items`);
+      }
+      
       const prompt = `
       Analyze the following information about a company website:
       
-      ${JSON.stringify(tavilyResponse, null, 2)}
+      ${JSON.stringify(limitedResponse, null, 2)}
       
-      Please provide a detailed analysis covering:
-      - What the company does
-      - Its current direction and focus
-      - Compliance posture and any notable legal or regulatory details
-      - Other interesting or unique findings
+      Please provide a detailed analysis with the following EXACT sections. Each section must be clearly labeled with the exact heading shown below:
       
-      Format your response as paragraphs of text.
+      SUMMARY: A concise summary of what the company does and its main offerings.
+      
+      COMPANY DIRECTION: The current direction and focus of the company, including strategic initiatives and market positioning.
+      
+      REGULATORY COMPLIANCE: Any compliance posture, legal considerations, or regulatory details mentioned.
+      
+      NEW LAUNCHES: Any new product launches, services, or initiatives mentioned.
+      
+      FLAGSHIP PRODUCTS: The main products or services that appear to be the company's flagship offerings.
+      
+      UNIQUE FINDINGS: Other interesting or unique findings about the company that don't fit into the above categories.
+      
+      SENTIMENT: A brief assessment of the overall sentiment and tone of the company's communications.
+      
+      Format each section with its heading followed by paragraphs of text. Ensure each section is clearly separated.
       `;
       
       const result = await model.generateContent(prompt);
       const response = await result.response;
       geminiResponse = response.text();
       console.log('Gemini API response received');
+      console.log('Gemini response content:', geminiResponse);
     } catch (error) {
       console.error('Gemini API error:', error);
       
@@ -204,7 +226,7 @@ export async function POST(request: NextRequest) {
         .from("analysis")
         .update({
           status: "failed",
-          result: JSON.stringify({ error: `Gemini API error: ${error instanceof Error ? error.message : String(error)}` })
+          summary: `Error: Gemini API error: ${error instanceof Error ? error.message : String(error)}`
         })
         .eq("id", analysisData.id);
 
@@ -214,6 +236,24 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Parse the Gemini response to extract structured data
+    const extractSection = (text: string, sectionName: string): string => {
+      const regex = new RegExp(`${sectionName}:\s*([\s\S]*?)(?=\n\n[A-Z]+:|$)`, 'i');
+      const match = text.match(regex);
+      return match ? match[1].trim() : '';
+    };
+    
+    // Extract each section from the Gemini response
+    const summary = extractSection(geminiResponse, 'SUMMARY');
+    const direction = extractSection(geminiResponse, 'COMPANY DIRECTION');
+    const compliance = extractSection(geminiResponse, 'REGULATORY COMPLIANCE');
+    const newLaunches = extractSection(geminiResponse, 'NEW LAUNCHES');
+    const flagshipProduct = extractSection(geminiResponse, 'FLAGSHIP PRODUCTS');
+    const uniqueFindings = extractSection(geminiResponse, 'UNIQUE FINDINGS');
+    const sentimentSummary = extractSection(geminiResponse, 'SENTIMENT');
+    
+    console.log('Extracted structured data from Gemini response');
+    
     // Create analysis result object
     const analysisResult: CompetitorAnalysisResult = {
       domain,
@@ -222,16 +262,18 @@ export async function POST(request: NextRequest) {
       timestamp: new Date()
     };
     
-    // Update the analysis record with completed status and results
+    // Update the analysis record with completed status and structured results
     const { error: updateError } = await adminClient
       .from("analysis")
       .update({
         status: "completed",
-        result: JSON.stringify({
-          domain,
-          analysis: geminiResponse,
-          timestamp: analysisResult.timestamp
-        }),
+        summary,
+        direction,
+        compliance,
+        new_launches: newLaunches,
+        flagship_product: flagshipProduct,
+        unique_findings: uniqueFindings,
+        sentiment_summary: sentimentSummary,
         completed_at: new Date().toISOString()
       })
       .eq("id", analysisData.id);
