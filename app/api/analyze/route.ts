@@ -210,9 +210,7 @@ export async function POST(request: NextRequest) {
       FLAGSHIP PRODUCTS: The main products or services that appear to be the company's flagship offerings.
       
       UNIQUE FINDINGS: Other interesting or unique findings about the company that don't fit into the above categories.
-      
-      SENTIMENT: A brief assessment of the overall sentiment and tone of the company's communications.
-      
+            
       IMPORTANT: Format each section EXACTLY with the heading name followed by a colon, then the content. Each section must start with the exact heading name as specified above. Separate each section with two newlines. Do not add any additional headings or sections.
       `;
       
@@ -272,7 +270,6 @@ export async function POST(request: NextRequest) {
     const newLaunches = extractSection(geminiResponse, 'NEW LAUNCHES');
     const flagshipProduct = extractSection(geminiResponse, 'FLAGSHIP PRODUCTS');
     const uniqueFindings = extractSection(geminiResponse, 'UNIQUE FINDINGS');
-    const sentimentSummary = extractSection(geminiResponse, 'SENTIMENT');
     
     console.log('Extracted structured data from Gemini response');
     console.log('SUMMARY:', summary || 'Not found');
@@ -281,7 +278,6 @@ export async function POST(request: NextRequest) {
     console.log('NEW LAUNCHES:', newLaunches || 'Not found');
     console.log('FLAGSHIP PRODUCTS:', flagshipProduct || 'Not found');
     console.log('UNIQUE FINDINGS:', uniqueFindings || 'Not found');
-    console.log('SENTIMENT:', sentimentSummary || 'Not found');
     
     // Create analysis result object
     const analysisResult: CompetitorAnalysisResult = {
@@ -302,7 +298,6 @@ export async function POST(request: NextRequest) {
         new_launches: newLaunches,
         flagship_product: flagshipProduct,
         unique_findings: uniqueFindings,
-        sentiment_summary: sentimentSummary,
         completed_at: new Date().toISOString()
       })
       .eq("id", analysisData.id);
