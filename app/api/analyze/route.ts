@@ -24,6 +24,8 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 // Initialize Gemini API
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
+
+
 export async function POST(request: NextRequest) {
   try {
     // Check if API keys are configured
@@ -131,6 +133,7 @@ export async function POST(request: NextRequest) {
 
     // Use Tavily API to crawl the website
     let tavilyResponse: TavilyCrawlResponse | null = null;
+    
     try {
       console.log('Calling Tavily API to crawl domain:', domain);
       const tvly = tavily({ apiKey: TAVILY_API_KEY });
@@ -194,7 +197,7 @@ export async function POST(request: NextRequest) {
       
       ${JSON.stringify(limitedResponse, null, 2)}
       
-      Please provide a detailed analysis with the following EXACT sections. Each section must be clearly labeled with the exact heading shown below:
+      Please provide a detailed analysis with the following EXACT sections. You MUST format your response EXACTLY as shown below, with each section clearly labeled with the exact heading followed by a colon:
       
       SUMMARY: A concise summary of what the company does and its main offerings.
       
@@ -210,7 +213,7 @@ export async function POST(request: NextRequest) {
       
       SENTIMENT: A brief assessment of the overall sentiment and tone of the company's communications.
       
-      Format each section with its heading followed by paragraphs of text. Ensure each section is clearly separated.
+      IMPORTANT: Format each section EXACTLY with the heading name followed by a colon, then the content. Each section must start with the exact heading name as specified above. Separate each section with two newlines. Do not add any additional headings or sections.
       `;
       
       const result = await model.generateContent(prompt);
@@ -238,9 +241,28 @@ export async function POST(request: NextRequest) {
     
     // Parse the Gemini response to extract structured data
     const extractSection = (text: string, sectionName: string): string => {
-      const regex = new RegExp(`${sectionName}:\s*([\s\S]*?)(?=\n\n[A-Z]+:|$)`, 'i');
-      const match = text.match(regex);
-      return match ? match[1].trim() : '';
+      // Simple direct approach: find the section name, then capture everything until the next section or end
+      const sectionStart = text.indexOf(sectionName + ':');
+      
+      if (sectionStart === -1) {
+        console.log(`Section not found: ${sectionName}`);
+        return '';
+      }
+      
+      // Find the start of the content (after the section name and colon)
+      const contentStart = sectionStart + sectionName.length + 1;
+      
+      // Find the next section (if any)
+      const nextSectionMatch = text.slice(contentStart).match(/\n\n[A-Z][A-Z ]+:/i);
+      const contentEnd = nextSectionMatch && nextSectionMatch.index !== undefined
+        ? contentStart + nextSectionMatch.index 
+        : text.length;
+      
+      // Extract and clean the content
+      const content = text.slice(contentStart, contentEnd).trim();
+      console.log(`Extracted ${sectionName}: ${content.substring(0, 50)}...`);
+      
+      return content;
     };
     
     // Extract each section from the Gemini response
@@ -253,6 +275,13 @@ export async function POST(request: NextRequest) {
     const sentimentSummary = extractSection(geminiResponse, 'SENTIMENT');
     
     console.log('Extracted structured data from Gemini response');
+    console.log('SUMMARY:', summary || 'Not found');
+    console.log('COMPANY DIRECTION:', direction || 'Not found');
+    console.log('REGULATORY COMPLIANCE:', compliance || 'Not found');
+    console.log('NEW LAUNCHES:', newLaunches || 'Not found');
+    console.log('FLAGSHIP PRODUCTS:', flagshipProduct || 'Not found');
+    console.log('UNIQUE FINDINGS:', uniqueFindings || 'Not found');
+    console.log('SENTIMENT:', sentimentSummary || 'Not found');
     
     // Create analysis result object
     const analysisResult: CompetitorAnalysisResult = {
