@@ -38,27 +38,32 @@ export default function Home() {
 						{/* Badge */}
 						<div className='inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 text-sm font-medium text-primary mb-8 backdrop-blur-sm'>
 							<div className='w-2 h-2 bg-primary rounded-full animate-pulse'></div>
-							100% Free Competitor Analysis Tool
+							100% Free Competitor Analysis Tool for Now ...
 						</div>
 
 						{/* Main heading with enhanced styling */}
-						<div className='relative'>
+						<div className='relative flex flex-col items-center'>
 							<h1 className='text-6xl md:text-8xl lg:text-9xl font-black tracking-tight mb-8'>
-								<span className='block bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent'>
+								<span className='block bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent animate-gradient'>
 									Competitor
 								</span>
-								<span className='block bg-gradient-to-r from-accent via-primary to-secondary bg-clip-text text-transparent'>
+								<span
+									className='block bg-gradient-to-r from-accent via-primary to-secondary bg-clip-text text-transparent animate-gradient'
+									style={{ animationDelay: "0.5s" }}
+								>
 									Analyzer
 								</span>
 							</h1>
+							{/* Glowing effect behind text */}
+							<div className='absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 blur-3xl opacity-30 animate-pulse'></div>
 						</div>
 
 						{/* Tagline */}
-						<div className='space-y-4'>
-							<p className='text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-6'>
+						<div className='flex flex-col items-center space-y-6'>
+							<p className='text-2xl md:text-3xl lg:text-4xl font-bold text-foreground'>
 								Analyze. Discover. Dominate.
 							</p>
-							<p className='text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
+							<p className='text-lg md:text-xl text-muted-foreground max-w-3xl leading-relaxed text-center'>
 								Unlock your competitive edge with AI-powered website analysis.
 								Get deep insights into competitor strategies, content, and
 								market positioning—completely free.
@@ -69,17 +74,12 @@ export default function Home() {
 						<div className='flex flex-col sm:flex-row gap-6 justify-center items-center pt-8 relative z-10'>
 							<Button
 								size='lg'
-								className='text-lg px-10 py-6 shadow-lg'
+								className='text-lg px-10 py-6 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300'
 								asChild
 							>
-								<Link href='/signup'>Start Analyzing - Free</Link>
-							</Button>
-							<Button
-								variant='outline'
-								size='lg'
-								className='text-lg px-10 py-6 border-2'
-							>
-								Watch Demo
+								<Link href='/signup'>
+									<span className='relative z-10'>Start Analyzing - Free</span>
+								</Link>
 							</Button>
 						</div>
 					</div>
@@ -87,25 +87,28 @@ export default function Home() {
 			</section>
 
 			{/* Features Section */}
-			<section id='features' className='py-20 px-4 scroll-mt-16'>
+			<section
+				id='features'
+				className='py-20 px-4 scroll-mt-16 bg-gradient-to-b from-background to-muted/20'
+			>
 				<div className='max-w-7xl mx-auto'>
-					<div className='text-center mb-16'>
+					<div className='flex flex-col items-center text-center mb-16'>
 						<div className='inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 text-sm font-medium text-primary mb-6'>
 							<Zap className='w-4 h-4' />
 							Powerful Features
 						</div>
-						<h2 className='text-4xl md:text-5xl font-bold mb-6'>
+						<h2 className='text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent'>
 							Everything You Need to Win
 						</h2>
-						<p className='text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
+						<p className='text-xl text-muted-foreground max-w-3xl leading-relaxed'>
 							Comprehensive competitor analysis tools designed to give you the
 							competitive edge you need to dominate your market.
 						</p>
 					</div>
 					<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-						<Card className='border-2 hover:border-primary/30 transition-colors duration-200'>
-							<CardHeader className='text-center p-8'>
-								<div className='w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6'>
+						<Card className='group border-2 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:scale-105'>
+							<CardHeader className='flex flex-col items-center text-center p-8'>
+								<div className='w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform'>
 									<Globe className='h-10 w-10 text-primary' />
 								</div>
 								<CardTitle className='text-2xl mb-4'>
@@ -118,9 +121,9 @@ export default function Home() {
 								</CardDescription>
 							</CardHeader>
 						</Card>
-						<Card className='border-2 hover:border-primary/30 transition-colors duration-200'>
-							<CardHeader className='text-center p-8'>
-								<div className='w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6'>
+						<Card className='group border-2 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:scale-105'>
+							<CardHeader className='flex flex-col items-center text-center p-8'>
+								<div className='w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform'>
 									<Search className='h-10 w-10 text-primary' />
 								</div>
 								<CardTitle className='text-2xl mb-4'>
@@ -133,9 +136,9 @@ export default function Home() {
 								</CardDescription>
 							</CardHeader>
 						</Card>
-						<Card className='border-2 hover:border-primary/30 transition-colors duration-200'>
-							<CardHeader className='text-center p-8'>
-								<div className='w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6'>
+						<Card className='group border-2 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:scale-105'>
+							<CardHeader className='flex flex-col items-center text-center p-8'>
+								<div className='w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform'>
 									<TrendingUp className='h-10 w-10 text-primary' />
 								</div>
 								<CardTitle className='text-2xl mb-4'>
@@ -147,9 +150,9 @@ export default function Home() {
 								</CardDescription>
 							</CardHeader>
 						</Card>
-						<Card className='border-2 hover:border-primary/30 transition-colors duration-200'>
-							<CardHeader className='text-center p-8'>
-								<div className='w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6'>
+						<Card className='group border-2 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:scale-105'>
+							<CardHeader className='flex flex-col items-center text-center p-8'>
+								<div className='w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform'>
 									<BarChart3 className='h-10 w-10 text-primary' />
 								</div>
 								<CardTitle className='text-2xl mb-4'>
@@ -161,9 +164,9 @@ export default function Home() {
 								</CardDescription>
 							</CardHeader>
 						</Card>
-						<Card className='border-2 hover:border-primary/30 transition-colors duration-200'>
-							<CardHeader className='text-center p-8'>
-								<div className='w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6'>
+						<Card className='group border-2 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:scale-105'>
+							<CardHeader className='flex flex-col items-center text-center p-8'>
+								<div className='w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform'>
 									<Zap className='h-10 w-10 text-primary' />
 								</div>
 								<CardTitle className='text-2xl mb-4'>
@@ -196,18 +199,18 @@ export default function Home() {
 			{/* How It Works Section */}
 			<section
 				id='how-it-works'
-				className='py-20 px-4 bg-muted/30 scroll-mt-16'
+				className='py-20 px-4 bg-gradient-to-b from-muted/20 to-background scroll-mt-16'
 			>
 				<div className='max-w-7xl mx-auto'>
-					<div className='text-center mb-16'>
+					<div className='flex flex-col items-center text-center mb-16'>
 						<div className='inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 text-sm font-medium text-primary mb-6'>
 							<BarChart3 className='w-4 h-4' />
 							Simple Process
 						</div>
-						<h2 className='text-4xl md:text-5xl font-bold mb-6'>
+						<h2 className='text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent'>
 							How It Works
 						</h2>
-						<p className='text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
+						<p className='text-xl text-muted-foreground max-w-3xl leading-relaxed'>
 							Get powerful competitor insights in just three simple steps. No
 							complex setup, no learning curve—just instant analysis.
 						</p>
