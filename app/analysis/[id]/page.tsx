@@ -27,7 +27,6 @@ import {
 	Search,
 	Shield,
 	TrendingUp,
-	Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -36,7 +35,7 @@ import { useEffect, useState } from "react";
 interface Analysis {
 	id: string;
 	url: string;
-	status: string;
+	status: "pending" | "completed" | "failed" | "processing";
 	created_at: string;
 	completed_at?: string;
 	summary?: string;
@@ -258,61 +257,6 @@ export default function AnalysisPage() {
 									</div>
 								</div>
 							</div>
-
-							{/* Conditional content based on status */}
-							{analysis.status === "pending" && (
-								<div className='max-w-2xl mx-auto'>
-									<Card className='border-2 border-dashed border-yellow-200 bg-yellow-50/50'>
-										<CardContent className='flex flex-col items-center py-12 text-center'>
-											<div className='w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-6'>
-												<Loader2 className='h-8 w-8 text-yellow-600 animate-spin' />
-											</div>
-											<h3 className='text-xl font-semibold mb-2'>
-												Analysis in Progress
-											</h3>
-											<p className='text-muted-foreground mb-6 max-w-md'>
-												Our AI is analyzing the competitor website. This
-												typically takes 2-5 minutes depending on the site
-												complexity.
-											</p>
-											<Button
-												onClick={() => fetchAnalysis()}
-												variant='outline'
-												className='hover:bg-yellow-50'
-											>
-												<Clock className='w-4 h-4 mr-2' />
-												Check Status
-											</Button>
-										</CardContent>
-									</Card>
-								</div>
-							)}
-
-							{analysis.status === "failed" && (
-								<div className='max-w-2xl mx-auto'>
-									<Card className='border-2 border-red-200 bg-red-50/50'>
-										<CardContent className='text-center py-12'>
-											<div className='w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6'>
-												<AlertCircle className='h-8 w-8 text-red-600' />
-											</div>
-											<h3 className='text-xl font-semibold text-red-900 mb-2'>
-												Analysis Failed
-											</h3>
-											<p className='text-red-700 mb-6'>
-												We encountered an issue analyzing this website. This
-												could be due to access restrictions or technical issues.
-											</p>
-											<Button
-												onClick={() => fetchAnalysis()}
-												className='bg-red-600 hover:bg-red-700'
-											>
-												<Zap className='w-4 h-4 mr-2' />
-												Retry Analysis
-											</Button>
-										</CardContent>
-									</Card>
-								</div>
-							)}
 
 							{analysis.status === "completed" && (
 								<div className='space-y-8'>

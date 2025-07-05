@@ -1,6 +1,6 @@
 ## Project Overview
 
-**Competitor Analyzer** is a web platform that empowers users to analyze competitor websites and gain actionable insights. The application streamlines the process of competitive intelligence by combining advanced web crawling with real-time brand and sentiment analysis.
+**Competition Radar** is a web platform that empowers users to analyze competitor websites and gain actionable insights. The application streamlines the process of competitive intelligence by combining advanced web crawling with real-time brand and sentiment analysis.
 
 ### Key Features
 
@@ -28,7 +28,7 @@
 - **Analysis Limits:**  
   Each user can analyze up to three competitor websites, ensuring focused, high-value insights.
 
-**Competitor Analyzer** provides a powerful, unified interface for discovering what your competitors are doing, how they’re perceived, and what you can learn from their strategies—all in one place.
+**Competition Radar** provides a powerful, unified interface for discovering what your competitors are doing, how they’re perceived, and what you can learn from their strategies—all in one place.
 
 ---
 

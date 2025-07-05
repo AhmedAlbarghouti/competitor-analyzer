@@ -17,7 +17,7 @@ export default function Navbar() {
 					<div className='flex items-center'>
 						<div className='flex-shrink-0'>
 							<h1 className='text-xl font-bold text-primary'>
-								Competitor Analyzer
+								Competition Radar
 							</h1>
 						</div>
 					</div>

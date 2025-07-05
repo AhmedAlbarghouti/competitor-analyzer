@@ -45,13 +45,13 @@ export default function Home() {
 						<div className='relative flex flex-col items-center'>
 							<h1 className='text-6xl md:text-8xl lg:text-9xl font-black tracking-tight mb-8'>
 								<span className='block bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent animate-gradient'>
-									Competitor
+									Competition
 								</span>
 								<span
 									className='block bg-gradient-to-r from-accent via-primary to-secondary bg-clip-text text-transparent animate-gradient'
 									style={{ animationDelay: "0.5s" }}
 								>
-									Analyzer
+									Radar
 								</span>
 							</h1>
 							{/* Glowing effect behind text */}
@@ -268,7 +268,7 @@ export default function Home() {
 						Ready to Dominate Your Market?
 					</h2>
 					<p className='text-xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed'>
-						Join thousands of businesses using Competitor Analyzer to gain the
+						Join thousands of businesses using Competition Radar to gain the
 						competitive edge. Start your first analysis in seconds—no credit
 						card required, no hidden fees.
 					</p>
@@ -290,7 +290,7 @@ export default function Home() {
 			{/* Footer */}
 			<footer className='border-t border-border py-8 px-4'>
 				<div className='max-w-7xl mx-auto text-center text-muted-foreground'>
-					<p>&copy; 2024 Competitor Analyzer. All rights reserved.</p>
+					<p>&copy; 2024 Competition Radar. All rights reserved.</p>
 				</div>
 			</footer>
 		</div>
