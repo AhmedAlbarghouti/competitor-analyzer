@@ -1,145 +1,205 @@
 "use client";
 
-import { useAuth } from '@/contexts/auth-context';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { BarChart3, Globe, Plus, TrendingUp } from 'lucide-react';
-import { AddDomainDialog } from '@/components/add-domain-dialog';
+import { AddDomainDialog } from "@/components/add-domain-dialog";
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { useAuth } from "@/contexts/auth-context";
+import { supabase } from "@/lib/supabase/client";
+import { Calendar, ExternalLink, Plus } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+interface Analysis {
+	id: string;
+	url: string;
+	status: string;
+	created_at: string;
+}
 
 export default function Dashboard() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const { user, loading } = useAuth();
+	const router = useRouter();
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [analyses, setAnalysis] = useState<Analysis[]>([]);
+	const [loadingAnalysis, setLoadingAnalysis] = useState(true);
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    }
-  }, [user, loading, router]);
+	useEffect(() => {
+		if (!loading && !user) {
+			router.push("/login");
+		}
+	}, [user, loading, router]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+	// Fetch user's analyses
+	useEffect(() => {
+		if (user) {
+			fetchAnalysis();
+		}
+	}, [user]);
 
-  if (!user) {
-    return null;
-  }
+	const fetchAnalysis = async () => {
+		try {
+			const { data, error } = await supabase
+				.from("analysis")
+				.select("id, url, status, created_at")
+				.order("created_at", { ascending: false });
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Background */}
-      <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary/5 to-secondary/5 rounded-full blur-3xl animate-breathe"></div>
-        <div className="absolute bottom-20 right-1/4 w-[400px] h-[400px] bg-gradient-to-r from-accent/10 to-primary/10 rounded-full blur-2xl animate-float" style={{ animationDelay: '3s' }}></div>
-      </div>
+			if (error) {
+				console.error("Error fetching analyses:", error);
+			} else {
+				setAnalysis(data || []);
+			}
+		} catch (error) {
+			console.error("Error:", error);
+		} finally {
+			setLoadingAnalysis(false);
+		}
+	};
 
-      {/* Header */}
-      <div className="border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-              <p className="text-muted-foreground mt-1">Welcome back, {user.email}</p>
-            </div>
-            <Button onClick={() => setIsDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              New Analysis
-            </Button>
-          </div>
-        </div>
-      </div>
+	const formatDate = (dateString: string) => {
+		return new Date(dateString).toLocaleDateString();
+	};
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Analyses</CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">No analyses yet</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Competitors Tracked</CardTitle>
-              <Globe className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Start tracking competitors</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Insights Generated</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Run your first analysis</p>
-            </CardContent>
-          </Card>
-        </div>
+	const getStatusColor = (status: string) => {
+		switch (status) {
+			case "completed":
+				return "text-green-600 bg-green-100";
+			case "pending":
+				return "text-yellow-600 bg-yellow-100";
+			case "failed":
+				return "text-red-600 bg-red-100";
+			default:
+				return "text-gray-600 bg-gray-100";
+		}
+	};
 
-        {/* Getting Started */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Get Started</CardTitle>
-            <CardDescription>
-              Start analyzing your competitors in just a few clicks
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="border rounded-lg p-4">
-                <h3 className="font-semibold mb-2">1. Add Competitor URLs</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Enter up to 3 competitor websites you want to analyze
-                </p>
-                <Button variant="outline" size="sm">
-                  Add Competitors
-                </Button>
-              </div>
-              <div className="border rounded-lg p-4">
-                <h3 className="font-semibold mb-2">2. Run Analysis</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Let our AI analyze their content, pricing, and strategies
-                </p>
-                <Button variant="outline" size="sm" disabled>
-                  Run Analysis
-                </Button>
-              </div>
-              <div className="border rounded-lg p-4">
-                <h3 className="font-semibold mb-2">3. View Insights</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Get actionable insights to improve your competitive position
-                </p>
-                <Button variant="outline" size="sm" disabled>
-                  View Reports
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      
-      <AddDomainDialog 
-        open={isDialogOpen} 
-        onOpenChange={setIsDialogOpen} 
-      />
-    </div>
-  );
+	if (loading) {
+		return (
+			<div className='min-h-screen flex items-center justify-center bg-background'>
+				<div className='text-center'>
+					<div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4'></div>
+					<p className='text-muted-foreground'>Loading...</p>
+				</div>
+			</div>
+		);
+	}
+
+	if (!user) {
+		return null;
+	}
+
+	return (
+		<div className='min-h-screen bg-background'>
+			{/* Header */}
+			<div className='border-b border-border'>
+				<div className='max-w-4xl mx-auto px-4 py-6'>
+					<div className='flex items-center justify-between'>
+						<div>
+							<h1 className='text-2xl font-semibold'>Dashboard</h1>
+							<p className='text-muted-foreground text-sm'>
+								Welcome back, {user.email}
+							</p>
+						</div>
+						<Button
+							onClick={() => setIsDialogOpen(true)}
+							className='flex items-center'
+						>
+							New Analysis
+							<Plus className='h-4 w-4 mr-2' />
+						</Button>
+					</div>
+				</div>
+			</div>
+
+			{/* Main Content */}
+			<div className='max-w-4xl mx-auto px-4 py-8'>
+				{/* Stats */}
+				<div className='mb-8'>
+					<Card>
+						<CardHeader>
+							<CardTitle className='text-lg'>Your Analysis</CardTitle>
+							<CardDescription>
+								Total analyses completed: {analyses.length}
+							</CardDescription>
+						</CardHeader>
+					</Card>
+				</div>
+
+				{/* Analysis List */}
+				<Card>
+					<CardHeader>
+						<CardTitle className='text-lg'>Recent Analysis</CardTitle>
+						<CardDescription>
+							View and manage your competitor analyses
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						{loadingAnalysis ? (
+							<div className='text-center py-8'>
+								<div className='animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-2'></div>
+								<p className='text-sm text-muted-foreground'>
+									Loading analyses...
+								</p>
+							</div>
+						) : analyses.length === 0 ? (
+							<div className='text-center py-8'>
+								<p className='text-muted-foreground mb-4'>No analyses yet</p>
+								<Button
+									onClick={() => setIsDialogOpen(true)}
+									variant='outline'
+									className='flex items-center'
+								>
+									<Plus className='h-4 w-4 mr-2' />
+									Create your first analysis
+								</Button>
+							</div>
+						) : (
+							<div className='space-y-4'>
+								{analyses.map((analysis) => (
+									<div
+										key={analysis.id}
+										className='flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors'
+									>
+										<div className='flex items-center space-x-4'>
+											<Link href={`/analysis/${analysis.id}`}>
+												<ExternalLink className='h-4 w-4 text-muted-foreground' />
+											</Link>
+											<div>
+												<p className='font-medium'>{analysis.url}</p>
+												<div className='flex items-center space-x-2 text-sm text-muted-foreground'>
+													<Calendar className='h-3 w-3' />
+													<span>{formatDate(analysis.created_at)}</span>
+												</div>
+											</div>
+										</div>
+										<div className='flex items-center space-x-2'>
+											<span
+												className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+													analysis.status
+												)}`}
+											>
+												{analysis.status}
+											</span>
+										</div>
+									</div>
+								))}
+							</div>
+						)}
+					</CardContent>
+				</Card>
+			</div>
+
+			<AddDomainDialog
+				open={isDialogOpen}
+				onOpenChange={setIsDialogOpen}
+				onSuccess={fetchAnalysis}
+			/>
+		</div>
+	);
 }

@@ -4,7 +4,7 @@
 
 ### Key Features
 
-- **User Authentication:** Secure login and signup to manage your analyses and results.
+- **User Authentication:** Secure login and signup to manage your analysis and results.
 - **Competitor Analysis Workflow:**  
   Users can initiate an analysis for up to three competitor websites. Each analysis is split into two comprehensive phases:
 

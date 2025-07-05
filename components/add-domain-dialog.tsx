@@ -18,9 +18,10 @@ import { toast } from "sonner";
 interface AddDomainDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 }
 
-export function AddDomainDialog({ open, onOpenChange }: AddDomainDialogProps) {
+export function AddDomainDialog({ open, onOpenChange, onSuccess }: AddDomainDialogProps) {
   const [domain, setDomain] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,6 +48,9 @@ export function AddDomainDialog({ open, onOpenChange }: AddDomainDialogProps) {
       toast.success(`Analysis started for ${data.domain}`);
       setDomain("");
       onOpenChange(false);
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error("Error starting analysis:", error);
       toast.error(error instanceof Error ? error.message : "Failed to start analysis");
